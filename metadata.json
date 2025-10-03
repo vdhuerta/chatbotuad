@@ -1,0 +1,5 @@
+{
+  "name": "ChatBot UAD",
+  "description": "Un chatbot con estilo neumórfico diseñado para ser integrado en plataformas como Moodle. Incluye un panel de administración para alimentar su base de conocimientos con texto e imágenes, permitiendo respuestas personalizadas basadas en el contenido proporcionado.",
+  "requestFramePermissions": []
+}
