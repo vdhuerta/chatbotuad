@@ -2,6 +2,9 @@
   "name": "chatbot-uad-netlify",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "build": "tsc"
+  },
   "dependencies": {
     "@google/genai": "^1.21.0"
   },
