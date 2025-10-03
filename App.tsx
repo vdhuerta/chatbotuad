@@ -9,12 +9,7 @@ import { KnowledgeBaseProvider, useKnowledgeBase } from './context/KnowledgeBase
 
 const App: React.FC = () => {
     const [isChatOpen, setIsChatOpen] = useState(false);
-    const [messages, setMessages] = useState<ChatMessage[]>([
-        {
-            role: 'model',
-            parts: [{ text: '¡Hola! ¿En qué puedo ayudarte hoy?' }],
-        },
-    ]);
+    const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [view, setView] = useState<'chat' | 'login' | 'admin'>('chat');
     const [password, setPassword] = useState('');
     const [isCourseSelectorOpen, setIsCourseSelectorOpen] = useState(false);
@@ -22,6 +17,16 @@ const App: React.FC = () => {
 
     const { knowledgeBases, selectedKnowledgeBases, selectedCourseNames, actions, isLoading, error } = useKnowledgeBase();
     
+    useEffect(() => {
+        // Set initial message or error message
+        if (error) {
+            setMessages([{ role: 'model', parts: [{ text: `Ha ocurrido un error al cargar la información: ${error}` }], isError: true }]);
+        } else if (!isLoading) {
+            setMessages([{ role: 'model', parts: [{ text: '¡Hola! ¿En qué puedo ayudarte hoy?' }] }]);
+        }
+    }, [isLoading, error]);
+
+
     useEffect(() => {
         // Interval to trigger the shake animation on the help text bubble
         const intervalId = setInterval(() => {
@@ -93,35 +98,28 @@ const App: React.FC = () => {
         );
     }
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <p>Cargando asistente...</p>
-            </div>
-        );
-    }
-
-    if (error) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <p className="text-red-500">{error}</p>
-            </div>
-        );
-    }
-
     return (
         <>
             {/* Chat Launcher */}
             <button
                 onClick={() => setIsChatOpen(true)}
-                className={`fixed bottom-6 right-6 z-40 flex items-center gap-3 group transition-all duration-300 ease-in-out ${isChatOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'}`}
+                className={`fixed bottom-6 right-6 z-40 flex items-center gap-3 group transition-all duration-300 ease-in-out ${isChatOpen ? 'opacity-0 scale-95 pointer-events-none' : 'opacity-100 scale-100'} ${isLoading ? 'cursor-wait' : ''}`}
                 aria-label="Abrir chat"
+                disabled={isLoading}
             >
                 <div className={`bg-rose-100 px-4 py-2 rounded-full shadow-lg ${animateHelpText ? 'animate-shake' : ''}`}>
                     <p className="font-semibold text-rose-700">¿Cómo te ayudo?</p>
                 </div>
                 <div className="w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center shadow-2xl group-hover:scale-105 transition-transform animate-heartbeat">
-                    <img src="https://raw.githubusercontent.com/vdhuerta/assets-aplications/main/BotUAD.png" alt="Asistente Virtual" className="w-full h-full object-contain p-1" />
+                    {isLoading ? (
+                        <div className="w-8 h-8 border-4 border-rose-300 border-t-rose-600 rounded-full animate-spin" aria-label="Cargando..."></div>
+                    ) : error ? (
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-label="Error">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    ) : (
+                        <img src="https://raw.githubusercontent.com/vdhuerta/assets-aplications/main/BotUAD.png" alt="Asistente Virtual" className="w-full h-full object-contain p-1" />
+                    )}
                 </div>
             </button>
             
