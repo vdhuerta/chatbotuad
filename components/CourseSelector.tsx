@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { useKnowledgeBase } from '../hooks/useKnowledgeBase';
-import { CheckIcon } from './Icons';
+import { CheckIcon, CloseIcon } from './Icons';
 
 const CourseSelector: React.FC = () => {
   const { knowledgeBases, selectedCourseNames, setSelectedCourseNames } = useKnowledgeBase();
@@ -33,7 +33,16 @@ const CourseSelector: React.FC = () => {
       </button>
       {isOpen && (
         <div className="absolute top-full mt-2 w-64 bg-white rounded-lg shadow-xl border border-gray-200 z-10">
-          <div className="p-2 text-sm font-semibold text-gray-700 border-b">Seleccionar cursos</div>
+          <div className="flex items-center justify-between p-2 text-sm font-semibold text-gray-700 border-b">
+            <span>Seleccionar cursos</span>
+            <button
+              onClick={() => setIsOpen(false)}
+              className="p-1 rounded-full text-gray-500 hover:bg-gray-200 hover:text-gray-800 transition-colors"
+              aria-label="Cerrar selector de cursos"
+            >
+              <CloseIcon className="w-4 h-4" />
+            </button>
+          </div>
           <ul className="py-1 max-h-40 overflow-y-auto">
             {knowledgeBases.map(kb => (
               <li key={kb.id}>

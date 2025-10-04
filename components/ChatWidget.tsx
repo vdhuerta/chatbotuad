@@ -58,7 +58,8 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
         if (error instanceof Error && error.message === "No course selected") {
             setMessages(prev => [...prev, { role: 'error', content: 'Por favor, selecciona al menos un curso del menú superior antes de preguntar.' }]);
         } else {
-            setMessages(prev => [...prev, { role: 'error', content: 'Lo siento, ocurrió un error. Por favor, inténtalo de nuevo.' }]);
+            const displayMessage = error instanceof Error ? error.message : 'Lo siento, ocurrió un error. Por favor, inténtalo de nuevo.';
+            setMessages(prev => [...prev, { role: 'error', content: displayMessage }]);
         }
     } finally {
       setIsLoading(false);
@@ -117,6 +118,9 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
             <SendIcon className="h-5 w-5" />
           </button>
         </form>
+        <p className="text-center text-[9px] text-gray-500 mt-2">
+          Desarrollado por UAD © 2025
+        </p>
       </div>
     </div>
   );
