@@ -36,6 +36,17 @@
           transform: scale(1.1);
         }
       }
+      @keyframes wave {
+        0%, 60%, 100% {
+          transform: translateY(0);
+        }
+        30% {
+          transform: translateY(-8px);
+        }
+      }
+      .wave-animation {
+        animation: wave 1.3s infinite;
+      }
     </style>
   <script type="importmap">
 {

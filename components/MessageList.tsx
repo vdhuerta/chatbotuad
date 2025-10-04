@@ -34,7 +34,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
         {messages.map((msg, index) => (
           <div
             key={index}
-            className={`max-w-[80%] p-3 rounded-xl whitespace-pre-wrap ${getMessageStyle(msg.role)}`}
+            className={`max-w-[80%] p-3 rounded-xl whitespace-pre-wrap text-sm ${getMessageStyle(msg.role)}`}
           >
             {msg.content}
           </div>
