@@ -12,13 +12,15 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
-  // FIX: Adhered to @google/genai guidelines by using process.env.API_KEY.
-  // This resolves the TypeScript error on line 17 related to `import.meta.env`.
-  if (!process.env.API_KEY) {
-    throw new Error("La configuración del asistente es incorrecta. Falta la clave de API (API Key). Contacta al administrador para configurar la variable de entorno API_KEY.");
+  // FIX: Adhering to guidelines to use process.env.API_KEY for the API key to resolve the TypeScript error.
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey) {
+    // FIX: Updated error message to reflect the correct environment variable.
+    throw new Error("La configuración del asistente es incorrecta. Falta la clave de API (API Key). Contacta al administrador para configurar la variable de entorno API_KEY en la plataforma de despliegue (ej. Netlify).");
   }
 
-  ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  ai = new GoogleGenAI({ apiKey });
   return ai;
 };
 
@@ -53,20 +55,29 @@ Now, answer the user's last question based only on this knowledge base and the c
 
   try {
     const gemini = getAiClient();
-    const contents = [...history.map((h) => ({ role: h.role, parts: h.parts }))];
-
-    const lastUserMessage = contents[contents.length - 1];
-    if (image && lastUserMessage.parts[0]) {
-      lastUserMessage.parts.push(image as any);
+    
+    if (history.length === 0) {
+      throw new Error("Cannot generate response for empty history.");
     }
 
-    const response: GenerateContentResponse = await gemini.models.generateContent({
-      model: 'gemini-2.5-flash',
-      contents: contents,
-      config: {
-        systemInstruction: systemInstruction,
-      },
+    // FIX: Use the Chat API for multi-turn conversations. `generateContent` was being used incorrectly with a history array.
+    const historyForChat = history.slice(0, -1).map(h => ({ role: h.role, parts: h.parts }));
+    const lastMessage = history[history.length - 1];
+    
+    const currentMessageParts: any[] = [...lastMessage.parts];
+    if (image) {
+        currentMessageParts.push(image);
+    }
+
+    const chat = gemini.chats.create({
+        model: 'gemini-2.5-flash',
+        history: historyForChat,
+        config: {
+            systemInstruction: systemInstruction,
+        },
     });
+    
+    const response: GenerateContentResponse = await chat.sendMessage({ message: currentMessageParts });
 
     return response.text;
   } catch (error) {
