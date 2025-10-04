@@ -108,7 +108,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
             placeholder="Escribe tu mensaje..."
             disabled={isLoading}
             rows={1}
-            className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none disabled:bg-gray-100"
+            className="flex-1 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition resize-none disabled:bg-gray-100 text-sm"
           />
           <button
             type="submit"

@@ -12,7 +12,7 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
-  // FIX: Use `process.env.API_KEY` to retrieve the API key, following the @google/genai coding guidelines and resolving the "Property 'env' does not exist on type 'ImportMeta'" TypeScript error.
+  // FIX: Use `process.env.API_KEY` to retrieve the API key, following the @google/genai coding guidelines.
   const apiKey = import.meta.env.VITE_API_KEY;
 
   if (!apiKey) {
