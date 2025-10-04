@@ -1,33 +1,25 @@
 
-export interface TextPart {
-    text: string;
-}
-
-export interface InlineDataPart {
-    inlineData: {
-        mimeType: string;
-        data: string;
-    };
-}
-
-export type MessagePart = TextPart | InlineDataPart;
-
-export interface ChatMessage {
-    role: 'user' | 'model';
-    parts: MessagePart[];
-    isError?: boolean;
-}
-
-export interface ImageFile {
-    name: string;
-    type: string;
-    base64: string;
-}
-
 export interface KnowledgeBase {
-    id?: number; // Added to uniquely identify records
-    course: string;
-    content: string;
-    image: ImageFile | null;
-    links: string; 
+  id: number;
+  course: string;
+  content: string;
+  links: string;
+  image_name: string | null;
+  image_type: string | null;
+  image_base64: string | null;
+}
+
+export type MessageRole = 'user' | 'model' | 'error';
+
+export interface Message {
+  role: MessageRole;
+  content: string;
+}
+
+export type ToastType = 'success' | 'error' | 'info';
+
+export interface Toast {
+  id: number;
+  message: string;
+  type: ToastType;
 }

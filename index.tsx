@@ -1,7 +1,8 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import AppContainer from './App';
+import App from './App';
+import { KnowledgeBaseProvider } from './context/KnowledgeBaseContext';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
@@ -11,6 +12,8 @@ if (!rootElement) {
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <AppContainer />
+    <KnowledgeBaseProvider>
+      <App />
+    </KnowledgeBaseProvider>
   </React.StrictMode>
 );
