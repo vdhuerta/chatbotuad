@@ -12,16 +12,13 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
-  // FIX: Switched from `import.meta.env.VITE_API_KEY` to `process.env.API_KEY` to resolve the TypeScript error
-  // and align with the coding guidelines.
-  const apiKey = process.env.API_KEY;
-
-  if (!apiKey) {
-    // FIX: Updated the error message to refer to the correct environment variable `API_KEY`.
+  // FIX: Adhered to @google/genai guidelines by using process.env.API_KEY.
+  // This resolves the TypeScript error on line 17 related to `import.meta.env`.
+  if (!process.env.API_KEY) {
     throw new Error("La configuración del asistente es incorrecta. Falta la clave de API (API Key). Contacta al administrador para configurar la variable de entorno API_KEY.");
   }
 
-  ai = new GoogleGenAI({ apiKey: apiKey });
+  ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   return ai;
 };
 
