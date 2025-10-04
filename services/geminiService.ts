@@ -12,11 +12,15 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
-  if (!process.env.API_KEY) {
-    throw new Error("La configuración del asistente es incorrecta. Falta la clave de API (API Key). Contacta al administrador para configurar la variable de entorno.");
+  // Fix: Per Gemini API guidelines, the API key must be obtained exclusively from process.env.API_KEY.
+  // This also resolves the TypeScript error "Property 'env' does not exist on type 'ImportMeta'".
+  const apiKey = process.env.API_KEY;
+
+  if (!apiKey) {
+    throw new Error("La configuración del asistente es incorrecta. Falta la clave de API (API Key). Contacta al administrador para configurar la variable de entorno API_KEY.");
   }
 
-  ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  ai = new GoogleGenAI({ apiKey: apiKey });
   return ai;
 };
 
