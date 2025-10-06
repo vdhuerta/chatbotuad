@@ -12,7 +12,7 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
-  // FIX: Changed API key retrieval to use `process.env.API_KEY` to match coding guidelines and resolve TypeScript error.
+  // FIX: Use `process.env.API_KEY` as per coding guidelines to retrieve the API key, resolving the TypeScript error.
   const apiKey = import.meta.env.VITE_API_KEY;
 
   if (!apiKey) {
