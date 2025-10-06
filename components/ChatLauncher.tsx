@@ -48,7 +48,7 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ onOpen }) => {
   const { icon, bgColor, disabled, text } = getLauncherState();
 
   return (
-    <div className="fixed bottom-5 right-5 flex items-center space-x-4 z-50">
+    <div className="fixed bottom-5 right-5 flex items-center space-x-4 z-50 pointer-events-auto">
       <div className={`px-4 py-2 bg-red-100 rounded-full shadow-lg text-red-700 font-semibold transition-opacity duration-300 ${shake ? 'shake' : ''}`}>
         {text}
       </div>
