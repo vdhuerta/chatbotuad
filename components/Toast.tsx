@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import { Toast as ToastType, ToastType as Type } from '../types';
 import { CheckIcon, ErrorIcon } from './Icons';
@@ -43,7 +42,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
 
   return (
     <div
-      className={`relative flex items-center text-white p-4 rounded-lg shadow-lg overflow-hidden animate-[slide-in-right_0.5s_ease-out]`}
+      className={`relative flex items-center text-white p-4 rounded-lg shadow-lg overflow-hidden animate-[slide-in-right_0.5s_ease-out] pointer-events-auto`}
     >
       <div className={`absolute inset-0 ${bg} opacity-90`}></div>
       <div className="relative flex items-center z-10">
