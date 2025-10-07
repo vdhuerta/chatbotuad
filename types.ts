@@ -1,4 +1,3 @@
-
 export interface KnowledgeBase {
   id: number;
   course: string;
@@ -16,7 +15,8 @@ export interface Message {
   content: string;
 }
 
-export type ToastType = 'success' | 'error' | 'info';
+// FIX: Add Toast and ToastType to be used by the toast notification system.
+export type ToastType = 'success' | 'error';
 
 export interface Toast {
   id: number;

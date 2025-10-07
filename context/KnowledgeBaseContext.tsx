@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useCallback, ReactNode } from 'react';
+// FIX: Import Toast and ToastType for the notification system.
 import { KnowledgeBase, Toast, ToastType } from '../types';
 import { processDocumentContent } from '../services/geminiService';
 import { supabase } from '../lib/supabaseClient';
@@ -13,7 +14,7 @@ interface KnowledgeBaseContextType {
   updateKnowledgeBase: (kb: KnowledgeBase) => Promise<void>;
   deleteKnowledgeBase: (id: number) => Promise<void>;
   uploadAndProcessDocument: (file: File) => Promise<string>;
-  addToast: (message: string, type?: ToastType) => void;
+  // FIX: Add properties for toast notifications.
   toasts: Toast[];
   removeToast: (id: number) => void;
 }
@@ -25,30 +26,21 @@ export const KnowledgeBaseProvider: React.FC<{ children: ReactNode }> = ({ child
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedCourseNames, setSelectedCourseNames] = useState<string[]>([]);
+  // FIX: Add state for toast notifications.
   const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const addToast = useCallback((message: string, type: ToastType = 'info') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-  }, []);
-  
-  const removeToast = (id: number) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  };
 
   const fetchKnowledgeBases = useCallback(async () => {
     setLoading(true);
     const { data, error } = await supabase.from('knowledge_bases').select('*').order('id', { ascending: true });
     if (error) {
       setError('Failed to fetch knowledge bases.');
-      addToast('Error al cargar la base de conocimientos', 'error');
       console.error('Supabase fetch error:', error);
     } else {
       setKnowledgeBases(data || []);
       setError(null);
     }
     setLoading(false);
-  }, [addToast]);
+  }, []);
 
   useEffect(() => {
     fetchKnowledgeBases();
@@ -73,10 +65,8 @@ export const KnowledgeBaseProvider: React.FC<{ children: ReactNode }> = ({ child
   const addKnowledgeBase = async (kb: Omit<KnowledgeBase, 'id'>) => {
     const { error } = await supabase.from('knowledge_bases').insert(kb);
     if (error) {
-      addToast('Error al crear el curso.', 'error');
       console.error('Supabase insert error:', error);
-    } else {
-      addToast('Curso creado exitosamente.', 'success');
+      throw new Error('Error al crear el curso.');
     }
   };
 
@@ -84,20 +74,16 @@ export const KnowledgeBaseProvider: React.FC<{ children: ReactNode }> = ({ child
     const { id, ...updateData } = kb;
     const { error } = await supabase.from('knowledge_bases').update(updateData).eq('id', id);
      if (error) {
-      addToast('Error al guardar los cambios.', 'error');
       console.error('Supabase update error:', error);
-    } else {
-      addToast('Cambios guardados exitosamente.', 'success');
+      throw new Error('Error al guardar los cambios.');
     }
   };
 
   const deleteKnowledgeBase = async (id: number) => {
     const { error } = await supabase.from('knowledge_bases').delete().eq('id', id);
     if (error) {
-      addToast('Error al eliminar el curso.', 'error');
       console.error('Supabase delete error:', error);
-    } else {
-      addToast('Curso eliminado exitosamente.', 'success');
+      throw new Error('Error al eliminar el curso.');
     }
   };
 
@@ -111,24 +97,25 @@ export const KnowledgeBaseProvider: React.FC<{ children: ReactNode }> = ({ child
                 const markdown = await processDocumentContent(base64, file.type);
                 if (markdown.startsWith('ERROR:')) {
                     const errorMessage = markdown.replace('ERROR: ', '');
-                    addToast(errorMessage, 'error');
                     reject(new Error(errorMessage));
                 } else {
-                    addToast('Documento procesado con éxito.', 'success');
                     resolve(markdown);
                 }
             } catch (e) {
                 const errorMessage = e instanceof Error ? e.message : 'Ocurrió un error desconocido.';
-                addToast(`Fallo el procesamiento del documento: ${errorMessage}`, 'error');
-                reject(e);
+                reject(new Error(`Fallo el procesamiento del documento: ${errorMessage}`));
             }
         };
         reader.onerror = (error) => {
-            addToast('Error al leer el archivo.', 'error');
-            reject(error);
+            reject(new Error('Error al leer el archivo.'));
         };
     });
   };
+
+  // FIX: Add function to remove toast notifications.
+  const removeToast = useCallback((id: number) => {
+    setToasts((prevToasts) => prevToasts.filter((toast) => toast.id !== id));
+  }, []);
 
   return (
     <KnowledgeBaseContext.Provider
@@ -142,7 +129,7 @@ export const KnowledgeBaseProvider: React.FC<{ children: ReactNode }> = ({ child
         updateKnowledgeBase,
         deleteKnowledgeBase,
         uploadAndProcessDocument,
-        addToast,
+        // FIX: Provide toast state and functions through context.
         toasts,
         removeToast,
       }}

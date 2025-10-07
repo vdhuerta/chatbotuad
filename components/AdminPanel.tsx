@@ -23,12 +23,19 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   const [isProcessingDoc, setIsProcessingDoc] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null);
+
+  const showStatusMessage = (text: string, type: 'success' | 'error', duration: number = 4000) => {
+    setStatusMessage({ text, type });
+    setTimeout(() => setStatusMessage(null), duration);
+  };
 
   const selectCourse = (kb: KnowledgeBase) => {
     setActiveCourse(kb);
     setFormState(kb);
     setIsCreating(false);
     setHasChanges(false);
+    setStatusMessage(null);
     setView('editor');
   };
 
@@ -45,6 +52,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     setFormState(newCourseTemplate);
     setIsCreating(true);
     setHasChanges(false); // Changes will be true on first input
+    setStatusMessage(null);
     setView('editor');
   };
 
@@ -96,8 +104,10 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
         const markdown = await uploadAndProcessDocument(file);
         setFormState(prev => ({ ...prev, content: `${prev.content || ''}\n\n${markdown}`.trim() }));
         setHasChanges(true);
+        showStatusMessage('Documento procesado con éxito.', 'success');
       } catch (error) {
         console.error("Doc processing failed:", error);
+        showStatusMessage(error instanceof Error ? error.message : 'Fallo en el procesamiento.', 'error');
       } finally {
         setIsProcessingDoc(false);
       }
@@ -105,26 +115,38 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
   };
   
   const handleSaveChanges = async () => {
-    if (!formState.course) return;
+    if (!formState.course) {
+        showStatusMessage('El nombre del curso es obligatorio.', 'error');
+        return;
+    };
     setIsSaving(true);
-    if (isCreating) {
-      await addKnowledgeBase(formState as Omit<KnowledgeBase, 'id'>);
-    } else if (activeCourse) {
-      await updateKnowledgeBase({ ...activeCourse, ...formState });
-      setActiveCourse(null);
+    try {
+        if (isCreating) {
+            await addKnowledgeBase(formState as Omit<KnowledgeBase, 'id'>);
+        } else if (activeCourse) {
+            await updateKnowledgeBase({ ...activeCourse, ...formState });
+        }
+        setHasChanges(false);
+        setView('list');
+    } catch (error) {
+        showStatusMessage(error instanceof Error ? error.message : 'Ocurrió un error al guardar.', 'error');
+    } finally {
+        setIsSaving(false);
     }
-    setIsSaving(false);
-    setHasChanges(false);
-    setView('list');
   };
   
   const handleDelete = async () => {
     if(activeCourse?.id) {
-        await deleteKnowledgeBase(activeCourse.id);
-        setActiveCourse(null);
-        setFormState({});
-        setShowDeleteModal(false);
-        setView('list');
+        try {
+            await deleteKnowledgeBase(activeCourse.id);
+            setActiveCourse(null);
+            setFormState({});
+            setShowDeleteModal(false);
+            setView('list');
+        } catch(error) {
+            setShowDeleteModal(false);
+            showStatusMessage(error instanceof Error ? error.message : 'Error al eliminar.', 'error');
+        }
     }
   };
 
@@ -258,14 +280,24 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
                   </button>
                 )}
               </div>
-              <button 
-                onClick={handleSaveChanges} 
-                disabled={!hasChanges || isSaving}
-                className="flex items-center bg-blue-500 text-white font-semibold py-1.5 px-3 rounded-lg hover:bg-blue-600 transition disabled:bg-blue-300 disabled:cursor-not-allowed text-xs"
-              >
-                {isSaving ? <Spinner className="w-4 h-4 mr-2" /> : <SaveIcon className="w-4 h-4 mr-2" />}
-                {isSaving ? 'Guardando...' : 'Guardar Cambios'}
-              </button>
+              <div className="flex items-center space-x-3">
+                {statusMessage && (
+                  <span
+                    key={Date.now()}
+                    className={`text-xs font-semibold animate-[scale-up_0.3s_ease-out] ${statusMessage.type === 'error' ? 'text-red-500' : 'text-green-600'}`}
+                  >
+                    {statusMessage.text}
+                  </span>
+                )}
+                <button 
+                  onClick={handleSaveChanges} 
+                  disabled={!hasChanges || isSaving}
+                  className="flex items-center bg-blue-500 text-white font-semibold py-1.5 px-3 rounded-lg hover:bg-blue-600 transition disabled:bg-blue-300 disabled:cursor-not-allowed text-xs"
+                >
+                  {isSaving ? <Spinner className="w-4 h-4 mr-2" /> : <SaveIcon className="w-4 h-4 mr-2" />}
+                  {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                </button>
+              </div>
             </div>
           </div>
         )}

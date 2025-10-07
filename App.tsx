@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import ChatLauncher from './components/ChatLauncher';
 import ChatWidget from './components/ChatWidget';
 import AdminPanel from './components/AdminPanel';
-import ToastContainer from './components/ToastContainer';
 
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -56,7 +55,6 @@ function App() {
 
   return (
     <>
-      <ToastContainer />
       {renderContent()}
     </>
   );
