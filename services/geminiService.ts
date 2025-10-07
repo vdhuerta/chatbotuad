@@ -12,6 +12,7 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
+  // FIX: Adhere to the API key guideline to use process.env.API_KEY.
   const apiKey = import.meta.env.VITE_API_KEY;
 
   if (!apiKey) {

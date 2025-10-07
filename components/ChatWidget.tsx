@@ -74,7 +74,7 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
   }
 
   return (
-    <div className="fixed bottom-5 right-5 w-[400px] h-[600px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 transition-all duration-300 origin-bottom-right animate-[scale-up_0.3s_ease-out]">
+    <div className="fixed bottom-5 right-5 w-[400px] h-[600px] bg-white rounded-2xl border border-gray-200 flex flex-col z-50 transition-all duration-300 origin-bottom-right animate-[scale-up_0.3s_ease-out] pointer-events-auto">
       {/* Header */}
       <div className="bg-gray-50 p-4 rounded-t-2xl border-b border-gray-200 flex items-center justify-between flex-shrink-0">
         <div className="flex items-center space-x-3">

@@ -3,28 +3,27 @@ import React, { useState, useEffect } from 'react';
 import ChatLauncher from './components/ChatLauncher';
 import ChatWidget from './components/ChatWidget';
 import AdminPanel from './components/AdminPanel';
+import ToastContainer from './components/ToastContainer';
 
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
 
-  const isAnythingOpen = isChatOpen || isAdminOpen;
-
   useEffect(() => {
-    // This effect manages the click-through behavior of the iframe.
     const root = document.getElementById('root');
-    if (root) {
-      if (isAnythingOpen) {
-        // When the chat or admin panel is open, the entire app should be interactive.
-        root.style.pointerEvents = 'auto';
-      } else {
-        // When only the launcher is visible, the root container should allow clicks
-        // to pass through to the underlying page (e.g., Moodle).
-        // The ChatLauncher component will re-enable pointer events for itself.
-        root.style.pointerEvents = 'none';
-      }
+    if (!root) return;
+
+    if (isAdminOpen) {
+      // When the admin panel is open (modal), the entire app area must be interactive.
+      root.style.pointerEvents = 'auto';
+    } else {
+      // For both the launcher and the chat widget, the root container should allow
+      // clicks to pass through to the underlying page. The individual components
+      // (ChatLauncher, ChatWidget) will re-enable pointer events for themselves.
+      root.style.pointerEvents = 'none';
     }
-  }, [isAnythingOpen]);
+    // This effect should run whenever the visibility of a major component changes.
+  }, [isChatOpen, isAdminOpen]);
 
   const openAdminPanel = () => {
     setIsChatOpen(false);
@@ -56,6 +55,7 @@ function App() {
   return (
     <>
       {renderContent()}
+      <ToastContainer />
     </>
   );
 }
