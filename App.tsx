@@ -13,17 +13,16 @@ function App() {
     const root = document.getElementById('root');
     if (!root) return;
 
+    // The entire iframe area should only be interactive when the admin panel modal is open.
+    // In all other cases (chat open or chat closed), the root should be click-through,
+    // allowing the individual components (launcher, widget) to capture their own pointer events.
     if (isAdminOpen) {
-      // When the admin panel is open (modal), the entire app area must be interactive.
       root.style.pointerEvents = 'auto';
     } else {
-      // For both the launcher and the chat widget, the root container should allow
-      // clicks to pass through to the underlying page. The individual components
-      // (ChatLauncher, ChatWidget) will re-enable pointer events for themselves.
       root.style.pointerEvents = 'none';
     }
-    // This effect should run whenever the visibility of a major component changes.
-  }, [isChatOpen, isAdminOpen]);
+    // This effect's logic only depends on whether the admin modal is active.
+  }, [isAdminOpen]);
 
   const openAdminPanel = () => {
     setIsChatOpen(false);
