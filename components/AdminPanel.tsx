@@ -172,7 +172,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 <div id="uad-chatbot-container">
     <iframe 
         id="uad-chatbot-iframe"
-        src="${window.location.origin}" 
+        src="URL_DEL_CHATBOT" 
         title="Asistente Virtual UAD"
         allow="microphone"
     ></iframe>
@@ -180,6 +180,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
 <script>
     const iframeContainer = document.getElementById('uad-chatbot-container');
+    const chatbotIframe = document.getElementById('uad-chatbot-iframe');
     const collapsedSize = { width: '80px', height: '80px' };
     const expandedSize = { width: '400px', height: '600px' };
 
@@ -187,7 +188,8 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     iframeContainer.style.height = collapsedSize.height;
 
     window.addEventListener('message', function(event) {
-        if (event.origin !== "${window.location.origin}") return;
+        // IMPORTANT: For security, replace "*" with the actual origin of your chatbot application
+        // if (event.origin !== 'URL_DEL_CHATBOT') return;
 
         if (event.data && event.data.type === 'UAD_CHATBOT_STATE') {
             const isExpanded = event.data.isExpanded;
