@@ -150,14 +150,61 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  const embedCode = `<iframe
-  src="${window.location.origin}"
-  style="position: fixed; bottom: 0; right: 0; width: 450px; height: 650px; border: none; z-index: 9999;"
-  title="Asistente Virtual"
-></iframe>`;
+  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD -->
+<style>
+    #uad-chatbot-container {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        transition: width 0.3s ease, height 0.3s ease;
+        overflow: hidden;
+    }
+    #uad-chatbot-container iframe {
+        width: 100%;
+        height: 100%;
+        border: none;
+        box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        border-radius: 16px;
+    }
+</style>
+
+<div id="uad-chatbot-container">
+    <iframe 
+        id="uad-chatbot-iframe"
+        src="${window.location.origin}" 
+        title="Asistente Virtual UAD"
+        allow="microphone"
+    ></iframe>
+</div>
+
+<script>
+    const iframeContainer = document.getElementById('uad-chatbot-container');
+    const collapsedSize = { width: '80px', height: '80px' };
+    const expandedSize = { width: '400px', height: '600px' };
+
+    iframeContainer.style.width = collapsedSize.width;
+    iframeContainer.style.height = collapsedSize.height;
+
+    window.addEventListener('message', function(event) {
+        if (event.origin !== "${window.location.origin}") return;
+
+        if (event.data && event.data.type === 'UAD_CHATBOT_STATE') {
+            const isExpanded = event.data.isExpanded;
+            if (isExpanded) {
+                iframeContainer.style.width = expandedSize.width;
+                iframeContainer.style.height = expandedSize.height;
+            } else {
+                iframeContainer.style.width = collapsedSize.width;
+                iframeContainer.style.height = collapsedSize.height;
+            }
+        }
+    });
+</script>
+<!-- FIN: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD -->`;
 
   const handleCopyCode = () => {
-    navigator.clipboard.writeText(embedCode);
+    navigator.clipboard.writeText(embedCode.trim());
     setIsCopied(true);
     setTimeout(() => setIsCopied(false), 2000);
   };
@@ -200,7 +247,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
               <textarea
                 readOnly
                 className="w-full text-[10px] p-1.5 border bg-gray-100 border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 resize-none h-20"
-                value={embedCode}
+                value={embedCode.trim()}
               />
               <button
                 onClick={handleCopyCode}

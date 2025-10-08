@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatLauncher from './components/ChatLauncher';
 import ChatWidget from './components/ChatWidget';
 import AdminPanel from './components/AdminPanel';
@@ -8,6 +8,17 @@ import ToastContainer from './components/ToastContainer';
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
+
+  // NEW ARCHITECTURE: postMessage communication
+  // This effect communicates the widget's state (expanded or collapsed) to the parent window.
+  // The parent window (e.g., Moodle) will be responsible for resizing the iframe,
+  // which is the definitive solution to the click-through/overlapping problem.
+  useEffect(() => {
+    const isExpanded = isChatOpen || isAdminOpen;
+    // The message object has a unique type to prevent conflicts with other scripts.
+    window.parent.postMessage({ type: 'UAD_CHATBOT_STATE', isExpanded }, '*');
+  }, [isChatOpen, isAdminOpen]);
+
 
   const openAdminPanel = () => {
     setIsChatOpen(false);
@@ -36,15 +47,10 @@ function App() {
     return <ChatLauncher onOpen={openChat} />;
   }
 
-  // This wrapper div declaratively handles the pointer-events logic.
-  // This is a more robust, "React-way" of handling this, preventing
-  // side-effects from direct DOM manipulation and ensuring the click-through
-  // behavior is consistently applied.
+  // The old pointer-events wrapper has been removed as this logic is now handled
+  // by the parent page resizing the iframe itself.
   return (
-    <div 
-      className="w-full h-full relative" 
-      style={{ pointerEvents: isAdminOpen ? 'auto' : 'none' }}
-    >
+    <div className="w-full h-full relative">
       {renderContent()}
       <ToastContainer />
     </div>
