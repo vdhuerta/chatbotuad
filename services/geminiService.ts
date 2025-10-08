@@ -12,7 +12,6 @@ const getAiClient = (): GoogleGenAI => {
     return ai;
   }
 
-  // FIX: Adhere to the API key guideline to use process.env.API_KEY.
   const apiKey = import.meta.env.VITE_API_KEY;
 
   if (!apiKey) {
@@ -59,7 +58,6 @@ Now, answer the user's last question based only on this knowledge base and the c
       throw new Error("Cannot generate response for empty history.");
     }
 
-    // FIX: Use the Chat API for multi-turn conversations. `generateContent` was being used incorrectly with a history array.
     const historyForChat = history.slice(0, -1).map(h => ({ role: h.role, parts: h.parts }));
     const lastMessage = history[history.length - 1];
     

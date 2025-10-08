@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import ChatLauncher from './components/ChatLauncher';
 import ChatWidget from './components/ChatWidget';
 import AdminPanel from './components/AdminPanel';
@@ -8,21 +8,6 @@ import ToastContainer from './components/ToastContainer';
 function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
-
-  useEffect(() => {
-    const root = document.getElementById('root');
-    if (!root) return;
-
-    // The entire iframe area should only be interactive when the admin panel modal is open.
-    // In all other cases (chat open or chat closed), the root should be click-through,
-    // allowing the individual components (launcher, widget) to capture their own pointer events.
-    if (isAdminOpen) {
-      root.style.pointerEvents = 'auto';
-    } else {
-      root.style.pointerEvents = 'none';
-    }
-    // This effect's logic only depends on whether the admin modal is active.
-  }, [isAdminOpen]);
 
   const openAdminPanel = () => {
     setIsChatOpen(false);
@@ -51,11 +36,18 @@ function App() {
     return <ChatLauncher onOpen={openChat} />;
   }
 
+  // This wrapper div declaratively handles the pointer-events logic.
+  // This is a more robust, "React-way" of handling this, preventing
+  // side-effects from direct DOM manipulation and ensuring the click-through
+  // behavior is consistently applied.
   return (
-    <>
+    <div 
+      className="w-full h-full relative" 
+      style={{ pointerEvents: isAdminOpen ? 'auto' : 'none' }}
+    >
       {renderContent()}
       <ToastContainer />
-    </>
+    </div>
   );
 }
 
