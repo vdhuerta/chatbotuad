@@ -55,7 +55,7 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ onOpen }) => {
       <button
         onClick={onOpen}
         disabled={disabled}
-        className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-300 ${bgColor} ${!loading && !error ? 'animate-[pulse-zoom_2s_infinite]' : ''}`}
+        className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-300 ${bgColor} ${!loading && !error ? 'animate-[pulse-zoom_2s_infinite]' : ''} pointer-events-auto`}
         aria-label="Abrir asistente virtual"
       >
         {icon}
