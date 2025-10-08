@@ -150,60 +150,27 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD -->
-<style>
-    #uad-chatbot-container {
+  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN SIMPLIFICADO PARA CHATBOT UAD (A prueba de Moodle) -->
+<iframe
+    title="Asistente Virtual UAD"
+    src="URL_DEL_CHATBOT"
+    style="
         position: fixed;
         bottom: 20px;
         right: 20px;
-        z-index: 9999;
-        transition: width 0.3s ease, height 0.3s ease;
-        overflow: hidden;
-    }
-    #uad-chatbot-container iframe {
-        width: 100%;
-        height: 100%;
+        width: 400px;
+        height: 600px;
         border: none;
-        box-shadow: 0 5px 25px rgba(0,0,0,0.15);
         border-radius: 16px;
-    }
-</style>
-
-<div id="uad-chatbot-container">
-    <iframe 
-        id="uad-chatbot-iframe"
-        src="URL_DEL_CHATBOT" 
-        title="Asistente Virtual UAD"
-        allow="microphone"
-    ></iframe>
-</div>
-
-<script>
-    const iframeContainer = document.getElementById('uad-chatbot-container');
-    const chatbotIframe = document.getElementById('uad-chatbot-iframe');
-    const collapsedSize = { width: '80px', height: '80px' };
-    const expandedSize = { width: '400px', height: '600px' };
-
-    iframeContainer.style.width = collapsedSize.width;
-    iframeContainer.style.height = collapsedSize.height;
-
-    window.addEventListener('message', function(event) {
-        // IMPORTANT: For security, replace "*" with the actual origin of your chatbot application
-        // if (event.origin !== 'URL_DEL_CHATBOT') return;
-
-        if (event.data && event.data.type === 'UAD_CHATBOT_STATE') {
-            const isExpanded = event.data.isExpanded;
-            if (isExpanded) {
-                iframeContainer.style.width = expandedSize.width;
-                iframeContainer.style.height = expandedSize.height;
-            } else {
-                iframeContainer.style.width = collapsedSize.width;
-                iframeContainer.style.height = collapsedSize.height;
-            }
-        }
-    });
-</script>
+        z-index: 9999;
+        pointer-events: none; /* Allows clicking through the iframe when collapsed */
+        box-shadow: 0 5px 25px rgba(0,0,0,0.15);
+        transition: width 0.3s ease, height 0.3s ease; /* Optional: for visual smoothness */
+    "
+    allow="microphone"
+></iframe>
 <!-- FIN: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD -->`;
+
 
   const handleCopyCode = () => {
     navigator.clipboard.writeText(embedCode.trim());
