@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, ChangeEvent } from 'react';
 import { KnowledgeBase } from '../types';
 import { useKnowledgeBase } from '../hooks/useKnowledgeBase';
@@ -150,25 +151,63 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN SIMPLIFICADO PARA CHATBOT UAD (A prueba de Moodle) -->
-<iframe
-    title="Asistente Virtual UAD"
-    src="URL_DEL_CHATBOT"
-    style="
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 400px;
-        height: 600px;
-        border: none;
-        border-radius: 16px;
-        z-index: 9999;
-        pointer-events: none; /* Allows clicking through the iframe when collapsed */
-        box-shadow: 0 5px 25px rgba(0,0,0,0.15);
-        transition: width 0.3s ease, height 0.3s ease; /* Optional: for visual smoothness */
-    "
-    allow="microphone"
-></iframe>
+  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD (Con Redimensión Dinámica) -->
+<div id="uad-chatbot-container"></div>
+<script>
+  (function() {
+    // Reemplaza 'URL_DEL_CHATBOT' con la URL real de tu aplicación de chatbot.
+    const chatbotUrl = 'URL_DEL_CHATBOT';
+    const container = document.getElementById('uad-chatbot-container');
+
+    // Prevenir la doble inicialización si el script se carga varias veces.
+    if (container.querySelector('#uad-chatbot-iframe')) {
+      return;
+    }
+
+    const iframe = document.createElement('iframe');
+    iframe.id = 'uad-chatbot-iframe';
+    iframe.title = 'Asistente Virtual UAD';
+    iframe.src = chatbotUrl;
+    
+    const styles = {
+      position: 'fixed',
+      bottom: '20px',
+      right: '20px',
+      width: '270px',
+      height: '80px',
+      border: 'none',
+      background: 'transparent',
+      zIndex: '9999',
+      transition: 'width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease',
+      boxShadow: 'none',
+      overflow: 'hidden'
+    };
+    Object.assign(iframe.style, styles);
+    
+    container.appendChild(iframe);
+
+    window.addEventListener('message', function(event) {
+      // Opcional: Añadir una comprobación de origen por seguridad.
+      // if (event.origin !== new URL(chatbotUrl).origin) return;
+
+      if (event.data && event.data.type === 'UAD_CHATBOT_STATE_CHANGE') {
+        const isExpanded = event.data.isExpanded;
+        const chatbotIframe = document.getElementById('uad-chatbot-iframe');
+        if (chatbotIframe) {
+          if (isExpanded) {
+            chatbotIframe.style.width = '400px';
+            chatbotIframe.style.height = '600px';
+            chatbotIframe.style.boxShadow = '0 5px 25px rgba(0,0,0,0.15)';
+          } else {
+            chatbotIframe.style.width = '270px';
+            chatbotIframe.style.height = '80px';
+            chatbotIframe.style.boxShadow = 'none';
+          }
+        }
+      }
+    });
+  })();
+</script>
 <!-- FIN: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD -->`;
 
 

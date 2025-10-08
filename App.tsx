@@ -10,6 +10,18 @@ function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const isExpanded = isChatOpen || isAdminOpen;
 
+  // Re-introduce postMessage to communicate with the parent window
+  // This allows the embed script to dynamically resize the iframe.
+  useEffect(() => {
+    // Ensure we are in an iframe before posting a message
+    if (window.parent !== window) {
+      window.parent.postMessage({
+        type: 'UAD_CHATBOT_STATE_CHANGE',
+        isExpanded: isExpanded,
+      }, '*'); // In a real production environment, you should replace '*' with your Moodle domain for security.
+    }
+  }, [isExpanded]);
+
   const openAdminPanel = () => {
     setIsChatOpen(false);
     setIsAdminOpen(true);
@@ -37,16 +49,9 @@ function App() {
     return <ChatLauncher onOpen={openChat} />;
   }
 
-  // The new architecture uses a self-contained iframe.
-  // We control click-through behavior using `pointer-events`.
-  // When collapsed (launcher only), the main container allows clicks to pass through.
-  // The launcher component itself re-enables pointer-events for the button.
-  // When expanded (chat/admin), the container becomes interactive.
+  // The pointerEvents logic is no longer needed as the iframe itself will be resized.
   return (
-    <div 
-      className="w-full h-full relative"
-      style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}
-    >
+    <div className="w-full h-full relative">
       {renderContent()}
       <ToastContainer />
     </div>
