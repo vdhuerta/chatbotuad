@@ -1,9 +1,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Message, KnowledgeBase } from '../types';
+import { Message } from '../types';
 import { useKnowledgeBase } from '../hooks/useKnowledgeBase';
 import { generateChatResponse } from '../services/geminiService';
-import { CloseIcon, AdminIcon, SendIcon } from './Icons';
+import { CloseIcon, AdminIcon, SendIcon, TrashIcon } from './Icons';
 import CourseSelector from './CourseSelector';
 import MessageList from './MessageList';
 import TypingIndicator from './TypingIndicator';
@@ -15,11 +15,31 @@ interface ChatWidgetProps {
 
 const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
   const { knowledgeBases, selectedCourseNames } = useKnowledgeBase();
-  const [messages, setMessages] = useState<Message[]>([
-    { role: 'model', content: '¡Hola! Selecciona uno o más cursos para comenzar.' },
-  ]);
+  
+  const initialMessage: Message = { role: 'model', content: '¡Hola! Para hacer consultas primero debes seleccionar un curso (o varios) y el asistente responderá tus preguntas según lo seleccionado.' };
+
+  const [messages, setMessages] = useState<Message[]>(() => {
+    try {
+      const savedHistory = localStorage.getItem('chatHistory');
+      if (savedHistory) {
+        const parsedHistory = JSON.parse(savedHistory);
+        if (Array.isArray(parsedHistory) && parsedHistory.length > 0) {
+          return parsedHistory;
+        }
+      }
+    } catch (error) {
+      console.error("Failed to load chat history from localStorage", error);
+      localStorage.removeItem('chatHistory');
+    }
+    return [initialMessage];
+  });
+  
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('chatHistory', JSON.stringify(messages));
+  }, [messages]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +94,10 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
     }
   }
 
+  const handleClearChat = () => {
+    setMessages([initialMessage]);
+  };
+
   return (
     <div className="w-full h-full bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col z-50 transition-all duration-300 origin-bottom-right animate-[scale-up_0.3s_ease-out]">
       {/* Header */}
@@ -86,6 +110,9 @@ const ChatWidget: React.FC<ChatWidgetProps> = ({ onClose, onAdminOpen }) => {
           </div>
         </div>
         <div className="flex items-center space-x-2">
+          <button onClick={handleClearChat} className="text-gray-500 hover:text-gray-800 p-1.5 rounded-full hover:bg-gray-200 transition-colors" aria-label="Limpiar chat">
+            <TrashIcon className="h-5 w-5" />
+          </button>
           <button onClick={onAdminOpen} className="text-gray-500 hover:text-gray-800 p-1.5 rounded-full hover:bg-gray-200 transition-colors">
             <AdminIcon className="h-5 w-5" />
           </button>

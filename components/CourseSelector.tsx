@@ -26,9 +26,14 @@ const CourseSelector: React.FC = () => {
     );
   };
 
+  const hasSelection = selectedCourseNames.length > 0;
+
   return (
     <div className="relative" ref={dropdownRef}>
-      <button onClick={() => setIsOpen(!isOpen)} className="text-xs text-blue-600 hover:underline">
+      <button 
+        onClick={() => setIsOpen(!isOpen)} 
+        className={`text-xs px-2 py-1 rounded-md bg-red-100 font-semibold transition-colors ${hasSelection ? 'text-green-800' : 'text-red-700'}`}
+      >
         {selectedCourseNames.length} curso(s) seleccionado(s)
       </button>
       {isOpen && (

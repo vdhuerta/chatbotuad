@@ -47,7 +47,7 @@ const MessageList: React.FC<MessageListProps> = ({ messages }) => {
             className={`max-w-[80%] p-3 rounded-xl whitespace-pre-wrap text-sm relative group ${getMessageStyle(msg.role)}`}
           >
             {msg.content}
-            {msg.role === 'model' && msg.content && (
+            {msg.role !== 'user' && msg.content && (
               <button
                 onClick={() => handleCopy(msg.content, index)}
                 className="absolute top-2 right-2 p-1 bg-black/20 rounded-md opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/30"
