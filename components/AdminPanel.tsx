@@ -151,7 +151,7 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     }
   };
 
-  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD (Interacción Selectiva) -->
+  const embedCode = `<!-- INICIO: CÓDIGO DE INSERCIÓN DEL CHATBOT UAD (Redimensión Dinámica) -->
 <div id="uad-chatbot-container"></div>
 <script>
   (function() {
@@ -159,7 +159,6 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     const chatbotUrl = 'URL_DEL_CHATBOT';
     const container = document.getElementById('uad-chatbot-container');
 
-    // Prevenir la doble inicialización si el script se carga varias veces.
     if (container.querySelector('#uad-chatbot-iframe')) {
       return;
     }
@@ -169,18 +168,41 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
     iframe.title = 'Asistente Virtual UAD';
     iframe.src = chatbotUrl;
     
-    const styles = {
+    const baseStyles = {
       position: 'fixed',
-      bottom: '0',
-      right: '0',
-      width: '400px',
-      height: '600px',
+      bottom: '20px',
+      right: '20px',
       border: 'none',
       background: 'transparent',
       zIndex: '9999',
-      pointerEvents: 'none' /* CRÍTICO: Hace que el iframe sea "click-through" */
+      transition: 'width 0.3s ease-out, height 0.3s ease-out, box-shadow 0.3s ease-out',
+      borderRadius: '16px',
+      overflow: 'hidden'
     };
-    Object.assign(iframe.style, styles);
+    
+    const collapsedStyles = {
+      width: '280px',
+      height: '80px',
+      boxShadow: 'none'
+    };
+
+    const expandedStyles = {
+      width: '400px',
+      height: '600px',
+      boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+    };
+
+    Object.assign(iframe.style, baseStyles, collapsedStyles);
+    
+    window.addEventListener('message', function(event) {
+      // No es necesario verificar event.source si la URL es de un dominio diferente.
+      // La seguridad del navegador impide que scripts de otros orígenes accedan a la ventana.
+      if (event.data.uadChatbotAction === 'expand') {
+        Object.assign(iframe.style, expandedStyles);
+      } else if (event.data.uadChatbotAction === 'collapse') {
+        Object.assign(iframe.style, collapsedStyles);
+      }
+    });
     
     container.appendChild(iframe);
   })();
@@ -196,15 +218,15 @@ const AdminPanel: React.FC<AdminPanelProps> = ({ onClose }) => {
 
   if (!isAuthenticated) {
     return (
-      <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[100]">
+      <div className="w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-[100]">
         <PasswordModal onSuccess={() => setIsAuthenticated(true)} onClose={onClose} />
       </div>
     );
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[100] p-4">
-      <div className="bg-gray-50 rounded-2xl shadow-2xl w-[400px] h-[600px] flex flex-col overflow-hidden animate-[scale-up_0.3s_ease-out]">
+    <div className="w-full h-full bg-black bg-opacity-60 flex items-center justify-center z-[100] p-4">
+      <div className="bg-gray-50 rounded-2xl shadow-2xl w-full h-full flex flex-col overflow-hidden animate-[scale-up_0.3s_ease-out]">
         
         {view === 'list' ? (
           <div className="flex flex-col h-full p-4">

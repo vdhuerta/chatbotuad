@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ChatLauncher from './components/ChatLauncher';
 import ChatWidget from './components/ChatWidget';
 import AdminPanel from './components/AdminPanel';
@@ -9,6 +9,14 @@ function App() {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const isExpanded = isChatOpen || isAdminOpen;
+
+  useEffect(() => {
+    if (isExpanded) {
+      window.parent.postMessage({ uadChatbotAction: 'expand' }, '*');
+    } else {
+      window.parent.postMessage({ uadChatbotAction: 'collapse' }, '*');
+    }
+  }, [isExpanded]);
 
   const openAdminPanel = () => {
     setIsChatOpen(false);
@@ -37,14 +45,9 @@ function App() {
     return <ChatLauncher onOpen={openChat} />;
   }
 
-  // The pointerEvents logic is now the main controller for interactivity.
-  // The ToastContainer is moved outside to prevent it from being affected.
   return (
     <>
-      <div 
-        className="w-full h-full"
-        style={{ pointerEvents: isExpanded ? 'auto' : 'none' }}
-      >
+      <div className="w-full h-full">
         {renderContent()}
       </div>
       <ToastContainer />
