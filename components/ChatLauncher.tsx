@@ -38,7 +38,7 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ onOpen }) => {
       };
     }
     return {
-      icon: <img src="https://raw.githubusercontent.com/vdhuerta/assets-aplications/main/BotUAD.png" alt="Asistente UAD" className="w-16 h-16" />,
+      icon: <img src="https://raw.githubusercontent.com/vdhuerta/assets-aplications/main/BotUAD.png" alt="Asistente UAD" className="w-full h-full" />,
       bgColor: 'bg-red-100',
       disabled: false,
       text: '¿Cómo te ayudo?',
@@ -48,14 +48,14 @@ const ChatLauncher: React.FC<ChatLauncherProps> = ({ onOpen }) => {
   const { icon, bgColor, disabled, text } = getLauncherState();
 
   return (
-    <div className="absolute bottom-0 right-0 p-4 flex items-center space-x-4">
+    <div className="absolute bottom-0 right-0 p-3 flex items-center space-x-3">
       <div className={`px-4 py-2 bg-red-100 rounded-full shadow-lg text-red-700 font-semibold transition-opacity duration-300 ${shake ? 'shake' : ''}`}>
         {text}
       </div>
       <button
         onClick={onOpen}
         disabled={disabled}
-        className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-300 ${bgColor} ${!loading && !error ? 'animate-[pulse-zoom_2s_infinite]' : ''}`}
+        className={`w-[50px] h-[50px] rounded-full flex items-center justify-center text-white shadow-xl transition-all duration-300 transform hover:scale-110 focus:outline-none focus:ring-4 focus:ring-red-300 ${bgColor} ${!loading && !error ? 'animate-[pulse-zoom_2s_infinite]' : ''}`}
         aria-label="Abrir asistente virtual"
       >
         {icon}
